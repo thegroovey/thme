@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Country Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Load countries list and populate dropdown
+        $.getJSON("https://restcountries.com/v3.1/all", function(data) {
+          var countryDropdown = $("#country-dropdown");
+          $.each(data, function(index, country) {
+            countryDropdown.append("<option value='" + country.name.common + "'>" + country.name.common + "</option>");
+          });
+        });
+        
+        // Handle country selection from dropdown
+        $("#country-dropdown").change(function() {
+          var selectedCountry = $(this).val();
+          if(selectedCountry !== "") {
+            $.getJSON("https://restcountries.com/v3.1/name/" + encodeURIComponent(selectedCountry) + "?fullText=true", function(data) {
+              var countryDetails = $("#country-details");
+              countryDetails.empty();
+              $.each(data, function(index, country) {
+                countryDetails.append("<h2>" + country.name.common + "</h2>");
+                countryDetails.append("<p>Capital: " + country.capital + "</p>");
+                countryDetails.append("<p>Region: " + country.region + "</p>");
+                countryDetails.append("<p>Population: " + country.population + "</p>");
+              });
+            });
+          }
+        });
+        
+        // Handle form submission
+        $("#country-form").submit(function(event) {
+          event.preventDefault();
+          var countryName = $("#country-name").val();
+          if(countryName !== "") {
+            $.getJSON("https://restcountries.com/v3.1/name/" + encodeURIComponent(countryName) + "?fullText=true", function(data) {
+              var countryDetails = $("#country-details");
+              countryDetails.empty();
+              $.each(data, function(index, country) {
+                countryDetails.append("<h2>" + country.name.common + "</h2>");
+                countryDetails.append("<p>Capital: " + country.capital + "</p>");
+                countryDetails.append("<p>Region: " + country.region + "</p>");
+                countryDetails.append("<p>Population: " + country.population + "</p>");
+              });
+            });
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <form id="country-form">
+      <label for="country-name">Enter a country name:</label>
+      <input type="text" id="country-name" name="country-name">
+      <input type="submit" value="Submit">
+    </form>
+    
+    <select id="country-dropdown">
+      <option value="">Select a country</option>
+    </select>
+    
+    <div id="country-details">
+    </div>
+  </body>
+</html>
+
